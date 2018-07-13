@@ -21,13 +21,18 @@ ASCharacter::ASCharacter()
 
 	//	without it crouching won't work
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+
+	ZoomedFOV = 30.f;
+	ZoomInterpSpeed = 20;
 }
 
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	DefaultFOV = CameraComp->FieldOfView;
+
 }
 
 // Called every frame
@@ -35,6 +40,10 @@ void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float TargetFOV = bWantsToZoom ? ZoomedFOV : DefaultFOV;
+	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
+
+	CameraComp->SetFieldOfView(NewFOV);
 }
 
 // Called to bind functionality to input
@@ -51,6 +60,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ASCharacter::CrouchBegin);
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ASCharacter::CrouchEnd);
+
+	PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &ASCharacter::ZoomBegin);
+	PlayerInputComponent->BindAction("Zoom", IE_Released, this, &ASCharacter::ZoomEnd);
 
 	//	CHALLENGE  code
 	//	ACharacter already has function Jump
@@ -85,4 +97,14 @@ FVector ASCharacter::GetPawnViewLocation() const
 	}
 
 	return Super::GetPawnViewLocation();
+}
+
+void ASCharacter::ZoomBegin()
+{
+	bWantsToZoom = true;
+}
+
+void ASCharacter::ZoomEnd()
+{
+	bWantsToZoom = false;
 }

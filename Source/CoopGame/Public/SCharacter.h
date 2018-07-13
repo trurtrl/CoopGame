@@ -29,11 +29,26 @@ protected:
 	void CrouchBegin();
 	void CrouchEnd();
 
+	void ZoomBegin();
+	void ZoomEnd();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent * CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
+
+	bool bWantsToZoom;
+
+	//	ZoomInterpSpeed is between 0.1 and 100
+	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100) )
+	float ZoomInterpSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float ZoomedFOV;
+
+	//	Default FOV set during BeginPLay
+	float DefaultFOV;
 
 public:	
 	// Called every frame
