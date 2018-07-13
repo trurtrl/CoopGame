@@ -18,7 +18,7 @@ ASWeapon::ASWeapon()
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 	RootComponent = MeshComp;
 
-	MuzzleSocketName = "MuzzleSocket";
+	MuzzleSocketName = "MuzzleSocket";	// the name has to be as in "mesh_asset_name"->Skeleton->Details->SocketParameters->SocketName
 	TracerTargetName = "BeamEnd";	//	this name is got from P_SmokeTrail->Emitters->Target->Details->Target->Distribution->ParameterName
 }
 
