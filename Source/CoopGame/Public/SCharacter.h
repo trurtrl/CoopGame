@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class ASWeapon;
 
 UCLASS()
 class COOPGAME_API ASCharacter : public ACharacter
@@ -19,6 +20,14 @@ public:
 	ASCharacter();
 
 protected:
+
+	ASWeapon * CurrentWeapon;
+
+	bool bWantsToZoom;
+
+	//	Default FOV set during BeginPLay
+	float DefaultFOV;
+
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -32,13 +41,13 @@ protected:
 	void ZoomBegin();
 	void ZoomEnd();
 
+	void Fire();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent * CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
-
-	bool bWantsToZoom;
 
 	//	ZoomInterpSpeed is between 0.1 and 100
 	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100) )
@@ -47,8 +56,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	float ZoomedFOV;
 
-	//	Default FOV set during BeginPLay
-	float DefaultFOV;
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	TSubclassOf<ASWeapon> StarterWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	FName WeaponAttachSocketName;
 
 public:	
 	// Called every frame

@@ -22,6 +22,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void PlayFireEffects(FVector TraceEnd);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<UDamageType> DamageType;
 
@@ -44,12 +46,11 @@ protected:
 	UParticleSystem* TracerEffect;
 
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	virtual void Fire();
-
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	virtual void Fire();
+
 };
