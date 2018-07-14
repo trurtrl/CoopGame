@@ -25,6 +25,8 @@ ASWeapon::ASWeapon()
 
 	MuzzleSocketName = "MuzzleSocket";	// the name has to be as in "mesh_asset_name"->Skeleton->Details->SocketParameters->SocketName
 	TracerTargetName = "BeamEnd";	//	this name is got from P_SmokeTrail->Emitters->Target->Details->Target->Distribution->ParameterName
+
+	BaseDamage = 20.f;
 }
 
 // Called when the game starts or when spawned
@@ -71,11 +73,20 @@ void ASWeapon::Fire()
 
 			AActor* HitActor = Hit.GetActor();
 
-			UGameplayStatics::ApplyPointDamage(HitActor, 20.f, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
-
-			//	Define effect type depending on a hit surface type
+			//	define surface type that was hit
 			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
 
+			//	Boost damage if hit in head
+			float ActualDamage = BaseDamage;
+			if (SurfaceType == SURFACE_FLESHVULNERABLE)
+			{
+				ActualDamage *= 4.f;
+			}
+
+			//	Apply damage
+			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+			
+			//	Define effect type depending on a hit surface type
 			UParticleSystem* SelectedEffect = nullptr;
 			switch (SurfaceType)
 			{
