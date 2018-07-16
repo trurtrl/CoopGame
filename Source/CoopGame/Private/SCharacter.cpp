@@ -5,7 +5,9 @@
 #include "Runtime/Engine/Classes/Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "SWeapon.h"
+#include "CoopGame.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -22,6 +24,9 @@ ASCharacter::ASCharacter()
 
 	//	without it crouching won't work
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+
+	//	fixes issue with showing effects when bullet hitting in CapsuleComponent extended by our own "weapon" part 
+	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
 
 	ZoomedFOV = 30.f;
 	ZoomInterpSpeed = 20;
