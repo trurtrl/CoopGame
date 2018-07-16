@@ -9,6 +9,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "CoopGame.h"
+#include "Runtime/Engine/Public/TimerManager.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(TEXT("COOP.DebugWeapons"), DebugWeaponDrawing, TEXT("Draw Debug Lines for Weapons"), ECVF_Cheat);
@@ -27,6 +28,8 @@ ASWeapon::ASWeapon()
 	TracerTargetName = "BeamEnd";	//	this name is got from P_SmokeTrail->Emitters->Target->Details->Target->Distribution->ParameterName
 
 	BaseDamage = 20.f;
+
+	RateOfFire = 600;
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +37,7 @@ void ASWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	TimeBetweenShots = 60 / RateOfFire;
 }
 
 // Called every frame
@@ -46,7 +50,6 @@ void ASWeapon::Tick(float DeltaTime)
 void ASWeapon::Fire()
 {
 	//	Trace the world from pawn eyes to crosshair location
-
 	AActor* MyOwner = GetOwner();
 	if (MyOwner)
 	{
@@ -116,6 +119,8 @@ void ASWeapon::Fire()
 
 		PlayFireEffects(TracerEndPoint);
 
+		LastFireTime = GetWorld()->TimeSeconds;
+
 	}
 
 }
@@ -149,4 +154,15 @@ void ASWeapon::PlayFireEffects(FVector TraceEnd)
 		}
 	}
 
+}
+
+void ASWeapon::FireStart()
+{
+	float FirstDelay = FMath::Max((LastFireTime - GetWorld()->TimeSeconds) + TimeBetweenShots, 0.0f);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, LastFireTime);
+}
+void ASWeapon::FireStop()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
 }

@@ -77,7 +77,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &ASCharacter::ZoomBegin);
 	PlayerInputComponent->BindAction("Zoom", IE_Released, this, &ASCharacter::ZoomEnd);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASCharacter::Fire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASCharacter::FireStart);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASCharacter::FireStop);
 
 	//	CHALLENGE  code
 	//	ACharacter already has function Jump
@@ -124,10 +125,18 @@ void ASCharacter::ZoomEnd()
 	bWantsToZoom = false;
 }
 
-void ASCharacter::Fire()
+void ASCharacter::FireStart()
 {
 	if (CurrentWeapon)
 	{
-		CurrentWeapon->Fire();
+		CurrentWeapon->FireStart();
+	}
+}
+
+void ASCharacter::FireStop()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->FireStop();
 	}
 }

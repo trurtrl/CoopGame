@@ -8,6 +8,8 @@
 
 class USkeletalMeshComponent;
 class UDamageType;
+class UCameraShake;
+
 
 UCLASS()
 class COOPGAME_API ASWeapon : public AActor
@@ -19,10 +21,21 @@ public:
 	ASWeapon();
 
 protected:
+
+	FTimerHandle TimerHandle_TimeBetweenShots;
+
+	//	Time in seconds of last fire
+	float LastFireTime;
+
+	//	Derived from RateOfFire
+	float TimeBetweenShots;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void PlayFireEffects(FVector TraceEnd);
+
+	virtual void Fire();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<UDamageType> DamageType;
@@ -54,12 +67,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float BaseDamage;
 
+	//	RPM - bullets per minute
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float RateOfFire;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	virtual void Fire();
+	void FireStart();
+	void FireStop();
+
 
 };
