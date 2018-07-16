@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SHealthComponent.h"
 #include "SWeapon.h"
 #include "CoopGame.h"
 
@@ -27,6 +28,8 @@ ASCharacter::ASCharacter()
 
 	//	fixes issue with showing effects when bullet hitting in CapsuleComponent extended by our own "weapon" part 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
+
+	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 
 	ZoomedFOV = 30.f;
 	ZoomInterpSpeed = 20;
@@ -51,6 +54,7 @@ void ASCharacter::BeginPlay()
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
 	}
 
+	HealthComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
 
 // Called every frame
@@ -143,5 +147,23 @@ void ASCharacter::FireStop()
 	if (CurrentWeapon)
 	{
 		CurrentWeapon->FireStop();
+	}
+}
+
+void ASCharacter::OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (Health <= 0.f && !bDied)
+	{
+		//	Die!
+		bDied = true;
+
+		GetMovementComponent()->StopMovementImmediately();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		//	Detach the Pawn from Controller
+		DetachFromControllerPendingDestroy();
+
+		//	After 10 sec the Pawn will be destroyed
+		SetLifeSpan(10.f);
 	}
 }
