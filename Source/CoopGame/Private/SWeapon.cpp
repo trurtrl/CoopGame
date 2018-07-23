@@ -30,6 +30,8 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.f;
 
 	RateOfFire = 600;
+
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned

@@ -22,8 +22,6 @@ public:
 
 protected:
 
-	ASWeapon * CurrentWeapon;
-
 	bool bWantsToZoom;
 
 	//	Default FOV set during BeginPLay
@@ -70,6 +68,9 @@ protected:
 	//	Pawn died previously
 	UPROPERTY(BlueprintReadOnly, Category = "Player")
 	bool bDied;
+
+	UPROPERTY(Replicated)
+	ASWeapon * CurrentWeapon;
 
 
 	UFUNCTION()
