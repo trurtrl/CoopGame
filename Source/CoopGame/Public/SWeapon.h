@@ -11,6 +11,23 @@ class UDamageType;
 class UCameraShake;
 
 
+//	Contains information of a single hitscan weapon linetrace
+USTRUCT()
+struct FHitScanTrace
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	FVector_NetQuantize TraceFrom;
+
+	UPROPERTY()
+	FVector_NetQuantize TraceTo;
+};
+
+
+
 UCLASS()
 class COOPGAME_API ASWeapon : public AActor
 {
@@ -73,6 +90,14 @@ protected:
 	//	RPM - bullets per minute
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float RateOfFire;
+
+	UPROPERTY(ReplicatedUsing = OnRep_HitScanTrace)
+	FHitScanTrace HitScanTrace;
+
+
+	UFUNCTION()
+	void OnRep_HitScanTrace();
+
 
 public:	
 	// Called every frame

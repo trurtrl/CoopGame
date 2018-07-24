@@ -10,6 +10,8 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "CoopGame.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "Net/UnrealNetwork.h"
+
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(TEXT("COOP.DebugWeapons"), DebugWeaponDrawing, TEXT("Draw Debug Lines for Weapons"), ECVF_Cheat);
@@ -127,6 +129,12 @@ void ASWeapon::Fire()
 
 		PlayFireEffects(TracerEndPoint);
 
+		if (Role == ROLE_Authority)
+		{
+			//	replicated to clients
+			HitScanTrace.TraceTo = TracerEndPoint;
+		}
+
 		LastFireTime = GetWorld()->TimeSeconds;
 
 	}
@@ -142,6 +150,13 @@ bool ASWeapon::ServerFire_Validate()
 {
 	return true;
 }
+
+void ASWeapon::OnRep_HitScanTrace()
+{
+	//	Play cosmetic FX
+	PlayFireEffects(HitScanTrace.TraceTo);
+}
+
 
 void ASWeapon::PlayFireEffects(FVector TraceEnd)
 {
@@ -183,4 +198,12 @@ void ASWeapon::FireStart()
 void ASWeapon::FireStop()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
+}
+
+void ASWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//	we don't need to replicate it from Owner through the Server back to the Owner 
+	DOREPLIFETIME_CONDITION(ASWeapon, HitScanTrace, COND_SkipOwner);
 }
