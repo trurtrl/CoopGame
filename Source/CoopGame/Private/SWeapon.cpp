@@ -52,6 +52,12 @@ void ASWeapon::Tick(float DeltaTime)
 void ASWeapon::Fire()
 {
 	//	Trace the world from pawn eyes to crosshair location
+
+	if (Role < ROLE_Authority)
+	{
+		ServerFire();
+	};
+
 	AActor* MyOwner = GetOwner();
 	if (MyOwner)
 	{
@@ -125,6 +131,16 @@ void ASWeapon::Fire()
 
 	}
 
+}
+
+void ASWeapon::ServerFire_Implementation()
+{
+	Fire();
+}
+
+bool ASWeapon::ServerFire_Validate()
+{
+	return true;
 }
 
 void ASWeapon::PlayFireEffects(FVector TraceEnd)
