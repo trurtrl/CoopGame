@@ -65,8 +65,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	FName WeaponAttachSocketName;
 
-	//	Pawn died previously
-	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	//	Pawn died previously, has to be replicated because it is used in BP HeroTTP_Anim to animate dying
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
 	bool bDied;
 
 	UPROPERTY(Replicated)
