@@ -19,10 +19,24 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	//	Next point in navigation path
+	FVector NextPathPoint;
+
+
 	FVector GetNextPathPoint();
+
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trackerbot")
+	float MovementForce;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trackerbot")
+	float RequiredDistanceToTraget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trackerbot")
+	bool bUseVelocityChange;
 
 
 public:	
