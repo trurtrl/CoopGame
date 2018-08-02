@@ -27,6 +27,10 @@ protected:
 	//	Dynamic material to pulse on damage
 	UMaterialInstanceDynamic* MaterialInstance;
 
+	bool bExploded;
+
+
+	void SelfDestruct();
 
 	FVector GetNextPathPoint();
 
@@ -45,6 +49,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Trackerbot")
 	bool bUseVelocityChange;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trackerbot")
+	UParticleSystem* ExplosionEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trackerbot")
+	float ExplosionRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Trackerbot")
+	float ExplosionDamage;
 
 
 	UFUNCTION()
