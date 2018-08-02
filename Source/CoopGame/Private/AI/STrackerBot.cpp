@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "DrawDebugHelpers.h"
 #include "SHealthComponent.h"
+#include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
 
 
 // Sets default values
@@ -25,8 +26,8 @@ ASTrackerBot::ASTrackerBot()
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
 
-	bUseVelocityChange = false;
-	MovementForce = 1000;
+	bUseVelocityChange = true;
+	MovementForce = 500;
 	RequiredDistanceToTraget = 100;
 }
 
@@ -88,6 +89,16 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* HealthComponent, float He
 	//	Explode on hitpoints == 0
 
 	//	@TODO: pulls the material to hit
+
+	if (MaterialInstance == nullptr)
+	{
+		MaterialInstance = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
+	}
+
+	if (MaterialInstance)
+	{
+		MaterialInstance->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Health %s of %s"), *FString::SanitizeFloat(Health), *GetName())
 }
