@@ -9,6 +9,8 @@
 #include "DrawDebugHelpers.h"
 #include "SHealthComponent.h"
 #include "Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h"
+#include "Components/SphereComponent.h"
+#include "SCharacter.h"
 
 
 // Sets default values
@@ -25,6 +27,13 @@ ASTrackerBot::ASTrackerBot()
 
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
+
+	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	SphereComp->SetSphereRadius(200);
+	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	SphereComp->SetupAttachment(RootComponent);
 
 	bUseVelocityChange = true;
 	MovementForce = 500;
@@ -130,4 +139,26 @@ void ASTrackerBot::SelfDestruct()
 
 	//	Delete Actor immediately
 	Destroy();
+}
+
+void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	if (!bStartedSelfDestruction)
+	{
+		ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
+		if (PlayerPawn)
+		{
+			//	We overlapped with a player!
+
+			//	Start self destruction sequence
+			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.f);
+
+			bStartedSelfDestruction = true;
+		}
+	}
+}
+
+void ASTrackerBot::DamageSelf()
+{
+	UGameplayStatics::ApplyDamage(this, 20, GetInstigatorController(), this, nullptr);
 }
