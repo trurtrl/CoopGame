@@ -27,7 +27,7 @@ protected:
 	virtual void BeginPlay() override;
 
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "HealthComponent")
+	UPROPERTY(ReplicatedUsing = OnRep_Health, BlueprintReadOnly, Category = "HealthComponent")
 	float Health;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HealthComponent")
@@ -36,6 +36,9 @@ protected:
 
 	UFUNCTION()
 	void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UFUNCTION()
+	void OnRep_Health(float OldHealth);
 
 
 public:	
